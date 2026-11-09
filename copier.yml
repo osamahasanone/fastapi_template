@@ -1,0 +1,28 @@
+# Only files inside template/ are copied into new projects.
+_subdirectory: template
+
+project_name:
+  type: str
+  help: Project name (lowercase, underscores, e.g. my_project)
+  validator: "{% if not project_name %}Project name is required{% endif %}"
+
+description:
+  type: str
+  help: Description
+  validator: "{% if not description %}Description is required{% endif %}"
+
+python_version:
+  type: str
+  help: Python version
+  default: "3.14"
+
+# Run inside the new project after its files are created.
+_tasks:
+  - git init
+  - uv add "fastapi[standard]" pydantic-settings "sqlalchemy[asyncio]" asyncpg alembic "celery[redis]" sqladmin itsdangerous
+  - uv add --dev ruff ty pytest pytest-asyncio ipython
+  - >-
+    uv run python -c "import pathlib, secrets; p = pathlib.Path('.env'); p.write_text(p.read_text().replace('__SECRET_KEY__', secrets.token_urlsafe(50)).replace('__ADMIN_PASSWORD__', secrets.token_urlsafe(16)))"
+  - prek install
+  - uv run ruff check . --fix
+  - uv run ruff format .
