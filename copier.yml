@@ -22,7 +22,7 @@ _tasks:
   - uv add "fastapi[standard]" pydantic-settings "sqlalchemy[asyncio]" asyncpg alembic "celery[redis]" sqladmin itsdangerous
   - uv add --dev ruff ty pytest pytest-asyncio ipython
   - >-
-    uv run python -c "import pathlib, secrets; p = pathlib.Path('.env'); p.write_text(p.read_text().replace('__SECRET_KEY__', secrets.token_urlsafe(50)).replace('__ADMIN_PASSWORD__', secrets.token_urlsafe(16)))"
+    uv run python -c "import pathlib, secrets; p = pathlib.Path('.env'); content = pathlib.Path('.env.example').read_text(); p.write_text(content.replace('SECRET_KEY=change-me', 'SECRET_KEY=' + secrets.token_urlsafe(50)).replace('ADMIN_PASSWORD=change-me', 'ADMIN_PASSWORD=' + secrets.token_urlsafe(16)))"
   - prek install
   - uv run ruff check . --fix
   - uv run ruff format .
